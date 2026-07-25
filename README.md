@@ -36,7 +36,7 @@ npm run dev
 2. Di GitHub: **Settings > Pages > Source > GitHub Actions**.
 3. Push ke branch `main` — workflow di `.github/workflows/deploy.yml` otomatis build & deploy.
 4. Setelah selesai, app bisa diakses di:
-   `https://<username-github>.github.io/visitku-nbx/`
+   `https://<username-github>.github.io/VisitKu-NBX/`
 
 ### 6. Tambah ke Home Screen HP
 1. Buka URL di atas lewat Chrome di HP.
