@@ -1,0 +1,9 @@
+{
+  "name": "VisitKu Nabire",
+  "short_name": "VisitKu",
+  "start_url": "/visitku-nbx/",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#1F3864",
+  "icons": []
+}
