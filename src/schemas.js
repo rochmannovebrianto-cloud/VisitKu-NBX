@@ -1,6 +1,19 @@
 // Definisi field untuk tiap form. Urutan field HARUS sama dengan
 // urutan kolom di SHEET_COLUMNS pada Code.gs.
 
+var PROVINSI_OPTIONS = [
+  'Sumatera Utara', 'Sumatera Barat', 'Riau', 'Kepulauan Riau', 'Kalimantan Utara',
+  'Kalimantan Barat', 'Kalimantan Timur', 'Kalimantan Selatan', 'Kalimantan Tengah',
+  'Jawa Timur', 'Jawa Tengah', 'Yogyakarta', 'Bali', 'Nusa Tenggara Barat',
+  'Nusa Tenggara Timur', 'Sulawesi Utara', 'Sulawesi Tengah', 'Sulawesi Barat',
+  'Sulawesi Selatan', 'Sulawesi Tenggara', 'Gorontalo', 'Maluku Utara', 'Maluku',
+  'Papua Barat', 'Papua'
+];
+var REGION_OPTIONS = [
+  'Sulawesi 1', 'Sulawesi 2', 'Kalimantan', 'Nusra Bali', 'Maluku Papua',
+  'East Java', 'Central Java', 'Northern Sumatera'
+];
+
 export var SCHEMAS = {
   Visit: {
     label: 'Visit Customer',
@@ -8,12 +21,11 @@ export var SCHEMAS = {
     fields: [
       { name: 'tanggal', label: 'Tanggal Visit', type: 'date', required: true },
       { name: 'customer', label: 'Nama Customer', type: 'customerSelect', required: true },
-      { name: 'produk', label: 'Nama Produk', type: 'text', required: true },
+      { name: 'produk', label: 'Nama Produk', type: 'productSelect', required: true },
       { name: 'qty', label: 'AMS Qty (Zak/Bal)', type: 'number', required: true },
-      { name: 'konversi', label: 'Konversi (kg/Zak)', type: 'number', default: 25 },
-      { name: 'supplierType', label: 'Supplier Type', type: 'select', options: ['Interflour', 'Competitor'], required: true },
+      { name: 'supplierType', label: 'Supplier Type', type: 'select', options: ['Distributor', 'Grosir'], required: true },
       { name: 'supplierName', label: 'Supplier Name', type: 'text' },
-      { name: 'stokSupplier', label: 'Stok Supplier', type: 'number' },
+      { name: 'stokSupplier', label: 'Stok Supplier', type: 'select', options: ['Ready', 'Out of Stock'] },
       { name: 'hargaBeli', label: 'Harga Beli', type: 'number' },
       { name: 'hargaJual', label: 'Harga Jual', type: 'number' },
       { name: 'tujuan', label: 'Tujuan', type: 'textarea' },
@@ -24,18 +36,6 @@ export var SCHEMAS = {
       { name: 'tcdVisit', label: 'TCD Visit', type: 'select', options: ['Ya', 'Tidak'] }
     ]
   },
-  DailyLog: {
-    label: 'Kegiatan Harian',
-    sheet: 'DailyLog',
-    fields: [
-      { name: 'tanggal', label: 'Tanggal', type: 'date', required: true },
-      { name: 'location', label: 'Location', type: 'text', required: true },
-      { name: 'kegiatan', label: 'Kegiatan', type: 'select',
-        options: ['Internal Meeting', 'Visit Customer', 'Reporting', 'OffDuty', 'Training', 'Perjalanan', 'Lainnya'],
-        required: true },
-      { name: 'keterangan', label: 'Keterangan', type: 'textarea' }
-    ]
-  },
   NonVisit: {
     label: 'Non Visit',
     sheet: 'NonVisit',
@@ -43,9 +43,11 @@ export var SCHEMAS = {
       { name: 'tanggal', label: 'Tanggal', type: 'date', required: true },
       { name: 'location', label: 'Location', type: 'text', required: true },
       { name: 'kegiatan', label: 'Kegiatan', type: 'select',
-        options: ['Survey Pasar', 'Cek Kompetitor', 'Distribusi Brosur', 'Koordinasi Distributor', 'Lainnya'],
+        options: ['Baking Demo', 'Sales Blitz or Topping Up', 'Job Training', 'Official Travel',
+                  'External Meeting', 'Internal Meeting', 'Product Trial', 'Handling Compliant',
+                  'Disposal of Expired Products', 'Reporting'],
         required: true },
-      { name: 'durasi', label: 'Durasi', type: 'text' },
+      { name: 'durasi', label: 'Durasi', type: 'select', options: ['Full Day', 'Half Day', 'Quarter Day'] },
       { name: 'keterangan', label: 'Keterangan', type: 'textarea' }
     ]
   },
@@ -54,7 +56,9 @@ export var SCHEMAS = {
     sheet: 'OffDuty',
     fields: [
       { name: 'tanggal', label: 'Tanggal', type: 'date', required: true },
-      { name: 'tipe', label: 'Tipe', type: 'select', options: ['Cuti', 'Sakit', 'Libur Nasional', 'Izin', 'Lainnya'], required: true },
+      { name: 'tipe', label: 'Tipe', type: 'select',
+        options: ['Cuti', 'Dispensasi', 'Sakit', 'Libur Nasional', 'Cuti Bersama', 'Akhir Pekan'],
+        required: true },
       { name: 'keterangan', label: 'Keterangan', type: 'textarea' }
     ]
   },
@@ -63,11 +67,11 @@ export var SCHEMAS = {
     sheet: 'Akuisisi',
     fields: [
       { name: 'tanggal', label: 'Tanggal', type: 'date', required: true },
-      { name: 'customer', label: 'Customer', type: 'customerSelectOrNew', required: true },
+      { name: 'customer', label: 'Customer', type: 'customerSelect', required: true },
       { name: 'tipeAkuisisi', label: 'Tipe Akuisisi', type: 'select',
-        options: ['Customer Baru', 'Produk Baru di Customer Lama', 'Konversi dari Kompetitor', 'Lainnya'],
+        options: ['New Item Product', 'Increase Drop Size', 'Selling Blitz / Topping Up'],
         required: true },
-      { name: 'produk', label: 'Produk Interflour Akuisisi', type: 'text' },
+      { name: 'produk', label: 'Produk Interflour Akuisisi', type: 'productSelect' },
       { name: 'jumlah', label: 'Jumlah (Zak/Box)', type: 'number' },
       { name: 'keterangan', label: 'Keterangan', type: 'textarea' }
     ]
@@ -81,7 +85,7 @@ export var SCHEMAS = {
       { name: 'namaPasar', label: 'Nama Pasar', type: 'text' },
       { name: 'hariPasar', label: 'Hari Pasar', type: 'select',
         options: ['Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu', 'Minggu'] },
-      { name: 'provinsi', label: 'Provinsi', type: 'text' },
+      { name: 'provinsi', label: 'Provinsi', type: 'select', options: PROVINSI_OPTIONS },
       { name: 'kotaKab', label: 'Kota/Kabupaten', type: 'text' },
       { name: 'kecamatan', label: 'Kecamatan', type: 'text' },
       { name: 'kelurahan', label: 'Kelurahan', type: 'text' },
@@ -90,11 +94,12 @@ export var SCHEMAS = {
       { name: 'telepon', label: 'Telepon', type: 'text' },
       { name: 'tglRegistrasi', label: 'Tanggal Registrasi', type: 'date' },
       { name: 'tglDidirikan', label: 'Tanggal Didirikan', type: 'text' },
-      { name: 'market', label: 'Market', type: 'select', options: ['Grosir', 'Retail', 'Mix'] },
-      { name: 'businessType', label: 'Business Type', type: 'text' },
-      { name: 'region', label: 'Region', type: 'text' }
+      { name: 'market', label: 'Market', type: 'select', options: ['GeneralMarket', 'EndUser'] },
+      { name: 'businessType', label: 'Business Type', type: 'select',
+        options: ['General Market', 'Modern Trade', 'UKM', 'Institusi'] },
+      { name: 'region', label: 'Region', type: 'select', options: REGION_OPTIONS }
     ]
   }
 };
 
-export var TAB_ORDER = ['Visit', 'DailyLog', 'NonVisit', 'OffDuty', 'Akuisisi', 'Customer'];
+export var TAB_ORDER = ['Visit', 'NonVisit', 'OffDuty', 'Akuisisi', 'Customer'];

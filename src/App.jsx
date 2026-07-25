@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react'
 import { SCHEMAS, TAB_ORDER } from './schemas.js'
 import DynamicForm from './DynamicForm.jsx'
-import { fetchCustomers } from './api.js'
+import { fetchCustomers, fetchProducts } from './api.js'
 
 var TAB_LABELS = {
   Visit: 'Visit',
@@ -21,9 +21,16 @@ export default function App() {
   var customers = stateCustomers[0]
   var setCustomers = stateCustomers[1]
 
+  var stateProducts = useState([])
+  var products = stateProducts[0]
+  var setProducts = stateProducts[1]
+
   useEffect(function () {
     fetchCustomers().then(function (list) {
       setCustomers(list)
+    })
+    fetchProducts().then(function (list) {
+      setProducts(list)
     })
   }, [])
 
@@ -36,7 +43,7 @@ export default function App() {
       </header>
 
       <main className="app-main">
-        <DynamicForm schema={schema} customers={customers} key={activeTab} />
+        <DynamicForm schema={schema} customers={customers} products={products} key={activeTab} />
       </main>
 
       <nav className="bottom-nav">

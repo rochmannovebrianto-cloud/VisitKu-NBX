@@ -17,6 +17,7 @@ function isoToDDMMYYYY(iso) {
 export default function DynamicForm(props) {
   var schema = props.schema
   var customers = props.customers
+  var products = props.products || []
 
   var initial = {}
   for (var i = 0; i < schema.fields.length; i++) {
@@ -98,6 +99,7 @@ export default function DynamicForm(props) {
       <h2 className="form-title">{schema.label}</h2>
 
       {schema.fields.map(function (f) {
+        if (f.type === 'hidden') return null
         return (
           <div className="field" key={f.name}>
             <label>{f.label}{f.required ? ' *' : ''}</label>
@@ -157,6 +159,23 @@ export default function DynamicForm(props) {
                   return <option value={c} key={c}>{c}</option>
                 })}
               </select>
+            )}
+
+            {f.type === 'productSelect' && (
+              <div>
+                <input
+                  list="product-options"
+                  type="text"
+                  placeholder="Ketik untuk cari produk..."
+                  value={values[f.name]}
+                  onChange={function (e) { handleChange(f.name, e.target.value) }}
+                />
+                <datalist id="product-options">
+                  {products.map(function (p) {
+                    return <option value={p} key={p} />
+                  })}
+                </datalist>
+              </div>
             )}
 
             {f.type === 'customerSelectOrNew' && !newCustomerMode && (

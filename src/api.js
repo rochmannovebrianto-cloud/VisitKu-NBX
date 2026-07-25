@@ -1,5 +1,5 @@
 // Ganti dengan URL Web App Apps Script kamu setelah deploy
-export var API_URL = 'https://script.google.com/macros/s/AKfycbwcani-iKvkda2IAqYD1nucsI7EQSEJ8gCSyMf37OaY-k2pCzbdnyJ51ABEAii_sK-6FQ/exec';
+export var API_URL = 'https://script.google.com/macros/s/AKfycbwX-OXvzDDQpW38jx3prJdo__eTdfbGTk4SYVOM4bOsdk_sjqybVCFdbaGpDOlYeS9A/exec';
 
 export function saveRow(sheetName, values) {
   var payload = { sheet: sheetName, values: values };
@@ -23,6 +23,19 @@ export function fetchCustomers() {
     .then(function (res) { return res.json(); })
     .then(function (data) {
       if (data && data.ok) return data.customers;
+      return [];
+    })
+    .catch(function () {
+      return [];
+    });
+}
+
+export function fetchProducts() {
+  var url = API_URL + '?action=products';
+  return fetch(url)
+    .then(function (res) { return res.json(); })
+    .then(function (data) {
+      if (data && data.ok) return data.products;
       return [];
     })
     .catch(function () {

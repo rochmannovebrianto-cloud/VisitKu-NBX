@@ -12,7 +12,7 @@
 // 6. Copy URL Web App yang dihasilkan, paste ke src/api.js (API_URL).
 // ============================================================
 
-var SPREADSHEET_ID = '1dfqHeg2Mizvh9sUC7L2YQGJVLlWJacEoMwZztqudUbw';
+var SPREADSHEET_ID = '1eTWbma-MsUKEZmYiXqAfyNlt8sY8HLAnjlcoVInxJ78';
 var FIRST_DATA_ROW = 3;
 var LAST_DATA_ROW = 302;
 
@@ -20,8 +20,7 @@ var LAST_DATA_ROW = 302;
 // Kolom lain (mis. F & R di Visit) sudah berisi rumus dan tidak disentuh.
 var SHEET_COLUMNS = {
   Customer: ['A','B','C','D','E','F','G','H','I','J','K','L','M','N','O','P'],
-  Visit: ['A','B','C','D','E','G','H','I','J','K','L','M','N','O','P','Q'],
-  DailyLog: ['A','B','C','D'],
+  Visit: ['A','B','C','D','G','H','I','J','K','L','M','N','O','P','Q'],
   NonVisit: ['A','B','C','D','E'],
   OffDuty: ['A','B','C'],
   Akuisisi: ['A','B','C','D','E','F']
@@ -101,6 +100,18 @@ function doGet(e) {
       }
       result.ok = true;
       result.customers = names;
+    } else if (action === 'products') {
+      var psheet = ss.getSheetByName('Produk');
+      var lastRow = psheet.getLastRow();
+      var products = [];
+      for (var pr = 3; pr <= lastRow; pr++) {
+        var pname = psheet.getRange(pr, 1).getValue();
+        if (pname !== '' && pname !== null) {
+          products.push(pname);
+        }
+      }
+      result.ok = true;
+      result.products = products;
     } else {
       result.message = 'Unknown action';
     }
