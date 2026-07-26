@@ -49,8 +49,8 @@ export default function App() {
     })
   }, [])
 
-  function handleSaved(sheetName) {
-    var updated = recordSubmission(sheetName)
+  function handleSaved(sheetName, customerName) {
+    var updated = recordSubmission(sheetName, customerName)
     setCounts(updated)
   }
 
@@ -65,6 +65,7 @@ export default function App() {
     <div className="app">
       <header className="app-header">
         <span>VisitKu Nabire</span>
+        <span className="app-header-tab">{TAB_LABELS[activeTab]}</span>
       </header>
 
       <main className="app-main">

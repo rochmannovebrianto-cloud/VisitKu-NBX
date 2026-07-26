@@ -32,6 +32,20 @@ body {
   position: sticky;
   top: 0;
   z-index: 10;
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+}
+
+.app-header-tab {
+  font-size: 13px;
+  font-weight: 600;
+  color: #FFD966;
+}
+
+.app-header-tab::before {
+  content: "› ";
+  color: #FFD966;
 }
 
 .app-main {
@@ -200,9 +214,11 @@ body {
 }
 
 .nav-btn.active {
-  color: #1F3864;
+  color: #ffffff;
+  font-weight: 800;
   border-top: 3px solid #FFD966;
-  background: #FBF8F0;
+  background: #1F3864;
+  border-radius: 8px 8px 0 0;
 }
 
 .summary-loading {

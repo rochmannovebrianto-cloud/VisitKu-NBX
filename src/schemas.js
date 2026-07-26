@@ -20,7 +20,7 @@ export var SCHEMAS = {
     sheet: 'Visit',
     fields: [
       { name: 'tanggal', label: 'Tanggal Visit', type: 'date', required: true },
-      { name: 'customer', label: 'Nama Customer', type: 'customerSelect', required: true },
+      { name: 'customer', label: 'Nama Customer', type: 'customerSearchSelect', required: true },
       { name: 'produk', label: 'Nama Produk', type: 'productSelect', required: true },
       { name: 'qty', label: 'AMS Qty (Zak/Bal)', type: 'number', required: true },
       { name: 'supplierType', label: 'Supplier Type', type: 'select', optionsKey: 'SupplierType', options: ['Distributor', 'Grosir'], required: true },

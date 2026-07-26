@@ -96,7 +96,7 @@ export default function DynamicForm(props) {
         setStatus({ type: 'success', message: res.message || 'Tersimpan!' })
         setValues(initial)
         setNewCustomerMode(false)
-        if (props.onSaved) props.onSaved(schema.sheet)
+        if (props.onSaved) props.onSaved(schema.sheet, values.customer)
       } else {
         setStatus({ type: 'error', message: (res && res.message) || 'Gagal menyimpan.' })
       }
@@ -170,21 +170,33 @@ export default function DynamicForm(props) {
               </select>
             )}
 
-            {f.type === 'productSelect' && (
+            {f.type === 'customerSearchSelect' && (
               <div>
                 <input
-                  list="product-options"
+                  list={'customer-options-' + f.name}
                   type="text"
-                  placeholder="Ketik untuk cari produk..."
+                  placeholder="Ketik untuk cari customer..."
                   value={values[f.name]}
                   onChange={function (e) { handleChange(f.name, e.target.value) }}
                 />
-                <datalist id="product-options">
-                  {products.map(function (p) {
-                    return <option value={p} key={p} />
+                <datalist id={'customer-options-' + f.name}>
+                  {customers.map(function (c) {
+                    return <option value={c} key={c} />
                   })}
                 </datalist>
               </div>
+            )}
+
+            {f.type === 'productSelect' && (
+              <select
+                value={values[f.name]}
+                onChange={function (e) { handleChange(f.name, e.target.value) }}
+              >
+                <option value="">-- Pilih Produk --</option>
+                {products.map(function (p) {
+                  return <option value={p} key={p}>{p}</option>
+                })}
+              </select>
             )}
 
             {f.type === 'customerSelectOrNew' && !newCustomerMode && (

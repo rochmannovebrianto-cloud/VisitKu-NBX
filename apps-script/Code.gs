@@ -12,7 +12,7 @@
 // 6. Copy URL Web App yang dihasilkan, paste ke src/api.js (API_URL).
 // ============================================================
 
-var SPREADSHEET_ID = '1dfqHeg2Mizvh9sUC7L2YQGJVLlWJacEoMwZztqudUbw';
+var SPREADSHEET_ID = '1eTWbma-MsUKEZmYiXqAfyNlt8sY8HLAnjlcoVInxJ78';
 var FIRST_DATA_ROW = 3;
 var LAST_DATA_ROW = 302;
 
