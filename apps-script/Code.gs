@@ -12,7 +12,7 @@
 // 6. Copy URL Web App yang dihasilkan, paste ke src/api.js (API_URL).
 // ============================================================
 
-var SPREADSHEET_ID = '1eTWbma-MsUKEZmYiXqAfyNlt8sY8HLAnjlcoVInxJ78';
+var SPREADSHEET_ID = '1dfqHeg2Mizvh9sUC7L2YQGJVLlWJacEoMwZztqudUbw';
 var FIRST_DATA_ROW = 3;
 var LAST_DATA_ROW = 302;
 
@@ -112,6 +112,25 @@ function doGet(e) {
       }
       result.ok = true;
       result.products = products;
+    } else if (action === 'dropdowns') {
+      var dsheet = ss.getSheetByName('ListDropdown');
+      var lastCol = dsheet.getLastColumn();
+      var lastRow2 = dsheet.getLastRow();
+      var dropdowns = {};
+      for (var col = 1; col <= lastCol; col++) {
+        var key = dsheet.getRange(2, col).getValue();
+        if (key === '' || key === null) continue;
+        var values = [];
+        for (var vr = 3; vr <= lastRow2; vr++) {
+          var val = dsheet.getRange(vr, col).getValue();
+          if (val !== '' && val !== null) {
+            values.push(val);
+          }
+        }
+        dropdowns[key] = values;
+      }
+      result.ok = true;
+      result.dropdowns = dropdowns;
     } else {
       result.message = 'Unknown action';
     }

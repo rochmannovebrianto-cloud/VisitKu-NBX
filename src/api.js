@@ -42,3 +42,18 @@ export function fetchProducts() {
       return [];
     });
 }
+
+export function fetchDropdowns() {
+  var url = API_URL + '?action=dropdowns';
+  return fetch(url)
+    .then(function (res) { return res.json(); })
+    .then(function (data) {
+      if (data && data.ok) return data.dropdowns;
+      return {};
+    })
+    .catch(function () {
+      return {};
+    });
+}
+
+

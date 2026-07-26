@@ -18,6 +18,14 @@ export default function DynamicForm(props) {
   var schema = props.schema
   var customers = props.customers
   var products = props.products || []
+  var dropdowns = props.dropdowns || {}
+
+  function resolveOptions(f) {
+    if (f.optionsKey && dropdowns[f.optionsKey] && dropdowns[f.optionsKey].length > 0) {
+      return dropdowns[f.optionsKey]
+    }
+    return f.options || []
+  }
 
   var initial = {}
   for (var i = 0; i < schema.fields.length; i++) {
@@ -88,6 +96,7 @@ export default function DynamicForm(props) {
         setStatus({ type: 'success', message: res.message || 'Tersimpan!' })
         setValues(initial)
         setNewCustomerMode(false)
+        if (props.onSaved) props.onSaved(schema.sheet)
       } else {
         setStatus({ type: 'error', message: (res && res.message) || 'Gagal menyimpan.' })
       }
@@ -143,7 +152,7 @@ export default function DynamicForm(props) {
                 onChange={function (e) { handleChange(f.name, e.target.value) }}
               >
                 <option value="">-- Pilih --</option>
-                {f.options.map(function (opt) {
+                {resolveOptions(f).map(function (opt) {
                   return <option value={opt} key={opt}>{opt}</option>
                 })}
               </select>
