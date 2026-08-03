@@ -20,7 +20,7 @@ export var SCHEMAS = {
     sheet: 'Visit',
     fields: [
       { name: 'tanggal', label: 'Tanggal Visit', type: 'date', required: true },
-      { name: 'customer', label: 'Nama Customer', type: 'customerSearchSelect', required: true },
+      { name: 'customer', label: 'Nama Customer', type: 'customerSelect', required: true },
       { name: 'produk', label: 'Nama Produk', type: 'productSelect', required: true },
       { name: 'qty', label: 'AMS Qty (Zak/Bal)', type: 'number', required: true },
       { name: 'supplierType', label: 'Supplier Type', type: 'select', optionsKey: 'SupplierType', options: ['Distributor', 'Grosir'], required: true },
@@ -95,8 +95,12 @@ export var SCHEMAS = {
       { name: 'tglRegistrasi', label: 'Tanggal Registrasi', type: 'date' },
       { name: 'tglDidirikan', label: 'Tanggal Didirikan', type: 'text' },
       { name: 'market', label: 'Market', type: 'select', optionsKey: 'Market', options: ['GeneralMarket', 'EndUser'] },
-      { name: 'businessType', label: 'Business Type', type: 'select', optionsKey: 'BusinessType',
-        options: ['General Market', 'Modern Trade', 'UKM', 'Institusi'] },
+      { name: 'businessType', label: 'Business Type', type: 'select', dependsOn: 'market',
+        optionsByValue: {
+          GeneralMarket: ['Grosir', 'Retail', 'Local Modern Trade', 'Toko Bahan Kue', 'National Key Account'],
+          EndUser: ['Industri Bakery', 'Industri Noodle', 'Industri Snack', 'Industri Other',
+                    'UKM Bakery', 'UKM Noodle', 'UKM Snack', 'Hawker', 'Horeca', 'Distributor', 'Grosir/Toko']
+        } },
       { name: 'region', label: 'Region', type: 'select', optionsKey: 'Region', options: REGION_OPTIONS }
     ]
   }
