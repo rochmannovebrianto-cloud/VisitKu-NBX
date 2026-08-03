@@ -20,7 +20,11 @@ export default function DynamicForm(props) {
   var products = props.products || []
   var dropdowns = props.dropdowns || {}
 
-  function resolveOptions(f) {
+  function resolveOptions(f, currentValues) {
+    if (f.dependsOn && f.optionsByValue) {
+      var parentValue = currentValues[f.dependsOn]
+      return f.optionsByValue[parentValue] || []
+    }
     if (f.optionsKey && dropdowns[f.optionsKey] && dropdowns[f.optionsKey].length > 0) {
       return dropdowns[f.optionsKey]
     }
@@ -65,6 +69,14 @@ export default function DynamicForm(props) {
   function handleChange(name, val) {
     var next = Object.assign({}, values)
     next[name] = val
+    // Kalau field ini punya field lain yang bergantung padanya (dependsOn),
+    // kosongkan pilihan field turunan itu supaya tidak ada kombinasi yang salah
+    for (var i = 0; i < schema.fields.length; i++) {
+      var child = schema.fields[i]
+      if (child.dependsOn === name) {
+        next[child.name] = ''
+      }
+    }
     setValues(next)
   }
 
@@ -146,17 +158,23 @@ export default function DynamicForm(props) {
               />
             )}
 
-            {f.type === 'select' && (
-              <select
-                value={values[f.name]}
-                onChange={function (e) { handleChange(f.name, e.target.value) }}
-              >
-                <option value="">-- Pilih --</option>
-                {resolveOptions(f).map(function (opt) {
-                  return <option value={opt} key={opt}>{opt}</option>
-                })}
-              </select>
-            )}
+            {f.type === 'select' && (function () {
+              var waitingOnParent = f.dependsOn && !values[f.dependsOn]
+              return (
+                <select
+                  value={values[f.name]}
+                  disabled={waitingOnParent}
+                  onChange={function (e) { handleChange(f.name, e.target.value) }}
+                >
+                  <option value="">
+                    {waitingOnParent ? '-- Pilih ' + schema.fields.filter(function (p) { return p.name === f.dependsOn })[0].label + ' dulu --' : '-- Pilih --'}
+                  </option>
+                  {resolveOptions(f, values).map(function (opt) {
+                    return <option value={opt} key={opt}>{opt}</option>
+                  })}
+                </select>
+              )
+            })()}
 
             {f.type === 'customerSelect' && (
               <select
@@ -171,15 +189,20 @@ export default function DynamicForm(props) {
             )}
 
             {f.type === 'productSelect' && (
-              <select
-                value={values[f.name]}
-                onChange={function (e) { handleChange(f.name, e.target.value) }}
-              >
-                <option value="">-- Pilih Produk --</option>
-                {products.map(function (p) {
-                  return <option value={p} key={p}>{p}</option>
-                })}
-              </select>
+              <div>
+                <input
+                  list="product-options"
+                  type="text"
+                  placeholder="Ketik untuk cari produk..."
+                  value={values[f.name]}
+                  onChange={function (e) { handleChange(f.name, e.target.value) }}
+                />
+                <datalist id="product-options">
+                  {products.map(function (p) {
+                    return <option value={p} key={p} />
+                  })}
+                </datalist>
+              </div>
             )}
 
             {f.type === 'customerSelectOrNew' && !newCustomerMode && (
