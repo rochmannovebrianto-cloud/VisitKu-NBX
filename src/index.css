@@ -32,20 +32,6 @@ body {
   position: sticky;
   top: 0;
   z-index: 10;
-  display: flex;
-  align-items: baseline;
-  gap: 8px;
-}
-
-.app-header-tab {
-  font-size: 13px;
-  font-weight: 600;
-  color: #FFD966;
-}
-
-.app-header-tab::before {
-  content: "› ";
-  color: #FFD966;
 }
 
 .app-main {
@@ -214,11 +200,9 @@ body {
 }
 
 .nav-btn.active {
-  color: #ffffff;
-  font-weight: 800;
+  color: #1F3864;
   border-top: 3px solid #FFD966;
-  background: #1F3864;
-  border-radius: 8px 8px 0 0;
+  background: #FBF8F0;
 }
 
 .summary-loading {
@@ -277,4 +261,93 @@ body {
 
 .summary-list li {
   margin-bottom: 4px;
+}
+
+.visited-banner {
+  background: #EAF3EC;
+  border: 1.5px solid #CFE3D4;
+  border-radius: 10px;
+  padding: 12px 14px;
+  margin-bottom: 18px;
+}
+
+.visited-banner-title {
+  font-size: 13.5px;
+  font-weight: 700;
+  color: #1F3864;
+  margin-bottom: 8px;
+}
+
+.visited-banner-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.visited-chip {
+  background: #fff;
+  border: 1px solid #CFE3D4;
+  color: #1a7a34;
+  border-radius: 999px;
+  padding: 4px 11px;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.visit-section {
+  background: #fff;
+  border: 1.5px solid #e5e0d2;
+  border-radius: 12px;
+  padding: 16px;
+  margin-bottom: 16px;
+}
+
+.visit-section-title {
+  font-size: 13px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.4px;
+  color: #8a8578;
+  margin: 0 0 14px 0;
+}
+
+.add-product-btn {
+  width: 100%;
+  text-align: center;
+  border: 1.5px dashed #1F3864;
+  border-radius: 8px;
+  padding: 10px;
+  margin-top: 4px;
+  text-decoration: none;
+}
+
+.product-list-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 0;
+  border-bottom: 1px solid #f0ede2;
+  font-size: 13.5px;
+}
+
+.product-list-item:last-child {
+  border-bottom: none;
+}
+
+.product-list-sub {
+  font-size: 12px;
+  color: #8a8578;
+  margin-top: 2px;
+}
+
+.remove-btn {
+  background: #fbe2e2;
+  color: #b32020;
+  border: none;
+  border-radius: 7px;
+  padding: 6px 10px;
+  font-size: 12px;
+  font-weight: 700;
+  white-space: nowrap;
 }

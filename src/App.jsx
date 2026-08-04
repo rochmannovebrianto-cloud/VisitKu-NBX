@@ -1,9 +1,10 @@
 import React, { useState, useEffect } from 'react'
 import { SCHEMAS, TAB_ORDER } from './schemas.js'
 import DynamicForm from './DynamicForm.jsx'
+import VisitForm from './VisitForm.jsx'
 import SummaryView from './SummaryView.jsx'
 import { fetchCustomers, fetchProducts, fetchDropdowns } from './api.js'
-import { getTodayCounts, recordSubmission } from './localSummary.js'
+import { getTodayCounts, recordSubmission, getTodayVisitedOutlets } from './localSummary.js'
 
 var TAB_LABELS = {
   Visit: 'Visit',
@@ -37,6 +38,10 @@ export default function App() {
   var counts = stateCounts[0]
   var setCounts = stateCounts[1]
 
+  var stateVisited = useState(function () { return getTodayVisitedOutlets() })
+  var visitedOutlets = stateVisited[0]
+  var setVisitedOutlets = stateVisited[1]
+
   useEffect(function () {
     fetchCustomers().then(function (list) {
       setCustomers(list)
@@ -49,9 +54,14 @@ export default function App() {
     })
   }, [])
 
-  function handleSaved(sheetName, customerName) {
-    var updated = recordSubmission(sheetName, customerName)
+  function handleSaved(sheetName, rowCount) {
+    var n = rowCount || 1
+    var updated = counts
+    for (var i = 0; i < n; i++) {
+      updated = recordSubmission(sheetName)
+    }
     setCounts(updated)
+    setVisitedOutlets(getTodayVisitedOutlets())
   }
 
   var schema = SCHEMAS[activeTab]
@@ -65,12 +75,22 @@ export default function App() {
     <div className="app">
       <header className="app-header">
         <span>VisitKu Nabire</span>
-        <span className="app-header-tab">{TAB_LABELS[activeTab]}</span>
       </header>
 
       <main className="app-main">
         {activeTab === 'Summary' && <SummaryView counts={counts} key="Summary" />}
-        {activeTab !== 'Summary' && (
+        {activeTab === 'Visit' && (
+          <VisitForm
+            schema={schema}
+            customers={customers}
+            products={products}
+            dropdowns={dropdowns}
+            visitedToday={visitedOutlets}
+            onSaved={handleSaved}
+            key="Visit"
+          />
+        )}
+        {activeTab !== 'Summary' && activeTab !== 'Visit' && (
           <DynamicForm
             schema={schema}
             customers={customers}

@@ -177,15 +177,20 @@ export default function DynamicForm(props) {
             })()}
 
             {f.type === 'customerSelect' && (
-              <select
-                value={values[f.name]}
-                onChange={function (e) { handleChange(f.name, e.target.value) }}
-              >
-                <option value="">-- Pilih Customer --</option>
-                {customers.map(function (c) {
-                  return <option value={c} key={c}>{c}</option>
-                })}
-              </select>
+              <div>
+                <input
+                  list="customer-options"
+                  type="text"
+                  placeholder="Ketik untuk cari customer..."
+                  value={values[f.name]}
+                  onChange={function (e) { handleChange(f.name, e.target.value) }}
+                />
+                <datalist id="customer-options">
+                  {customers.map(function (c) {
+                    return <option value={c} key={c} />
+                  })}
+                </datalist>
+              </div>
             )}
 
             {f.type === 'productSelect' && (

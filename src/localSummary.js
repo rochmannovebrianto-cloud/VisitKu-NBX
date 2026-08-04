@@ -1,13 +1,7 @@
 // Menghitung jumlah input hari ini langsung di HP (localStorage),
 // tanpa perlu tarik data dari Google Sheets - jadi instan, tanpa loading.
-//
-// Visit & Akuisisi dihitung UNIK per customer (kalau toko yang sama
-// diinput beberapa kali dalam sehari, tetap dihitung 1).
-// NonVisit & OffDuty dihitung biasa (per input).
 
-var DEDUPE_BY_CUSTOMER = ['Visit', 'Akuisisi']
-var PLAIN_COUNT = ['NonVisit', 'OffDuty']
-var TRACKED_SHEETS = DEDUPE_BY_CUSTOMER.concat(PLAIN_COUNT)
+var TRACKED_SHEETS = ['Visit', 'NonVisit', 'OffDuty', 'Akuisisi']
 
 function todayKey() {
   var d = new Date()
@@ -16,75 +10,71 @@ function todayKey() {
   return 'visitku_summary_' + d.getFullYear() + '-' + m + '-' + day
 }
 
-function emptyData() {
-  var data = {}
-  for (var i = 0; i < DEDUPE_BY_CUSTOMER.length; i++) {
-    data[DEDUPE_BY_CUSTOMER[i]] = []
-  }
-  for (var j = 0; j < PLAIN_COUNT.length; j++) {
-    data[PLAIN_COUNT[j]] = 0
-  }
-  return data
+function todayOutletKey() {
+  return todayKey() + '_outlets'
 }
 
-function loadData() {
-  try {
-    var raw = window.localStorage.getItem(todayKey())
-    if (!raw) return emptyData()
-    var parsed = JSON.parse(raw)
-    var data = emptyData()
-    for (var i = 0; i < DEDUPE_BY_CUSTOMER.length; i++) {
-      var key = DEDUPE_BY_CUSTOMER[i]
-      if (Array.isArray(parsed[key])) data[key] = parsed[key]
-    }
-    for (var j = 0; j < PLAIN_COUNT.length; j++) {
-      var pkey = PLAIN_COUNT[j]
-      if (typeof parsed[pkey] === 'number') data[pkey] = parsed[pkey]
-    }
-    return data
-  } catch (err) {
-    return emptyData()
-  }
-}
-
-function saveData(data) {
-  try {
-    window.localStorage.setItem(todayKey(), JSON.stringify(data))
-  } catch (err) {
-    // localStorage unavailable - counts just won't persist across reloads
-  }
-}
-
-export function getTodayCounts() {
-  var data = loadData()
+function emptyCounts() {
   var counts = {}
-  for (var i = 0; i < DEDUPE_BY_CUSTOMER.length; i++) {
-    var key = DEDUPE_BY_CUSTOMER[i]
-    counts[key] = data[key].length
-  }
-  for (var j = 0; j < PLAIN_COUNT.length; j++) {
-    var pkey = PLAIN_COUNT[j]
-    counts[pkey] = data[pkey]
+  for (var i = 0; i < TRACKED_SHEETS.length; i++) {
+    counts[TRACKED_SHEETS[i]] = 0
   }
   return counts
 }
 
-// customerName hanya relevan untuk sheet Visit & Akuisisi (dedupe)
-export function recordSubmission(sheetName, customerName) {
-  if (TRACKED_SHEETS.indexOf(sheetName) === -1) return getTodayCounts()
-  var data = loadData()
-
-  if (DEDUPE_BY_CUSTOMER.indexOf(sheetName) !== -1) {
-    var name = (customerName || '').trim().toLowerCase()
-    if (name && data[sheetName].indexOf(name) === -1) {
-      data[sheetName].push(name)
+export function getTodayCounts() {
+  try {
+    var raw = window.localStorage.getItem(todayKey())
+    if (!raw) return emptyCounts()
+    var parsed = JSON.parse(raw)
+    var counts = emptyCounts()
+    for (var i = 0; i < TRACKED_SHEETS.length; i++) {
+      var key = TRACKED_SHEETS[i]
+      if (typeof parsed[key] === 'number') counts[key] = parsed[key]
     }
-  } else {
-    data[sheetName] = data[sheetName] + 1
+    return counts
+  } catch (err) {
+    return emptyCounts()
   }
+}
 
-  saveData(data)
-  return getTodayCounts()
+export function recordSubmission(sheetName) {
+  if (TRACKED_SHEETS.indexOf(sheetName) === -1) return getTodayCounts()
+  var counts = getTodayCounts()
+  counts[sheetName] = counts[sheetName] + 1
+  try {
+    window.localStorage.setItem(todayKey(), JSON.stringify(counts))
+  } catch (err) {
+    // localStorage unavailable - counts just won't persist across reloads
+  }
+  return counts
+}
+
+// ---- Outlet yang sudah divisit hari ini (khusus sheet Visit) ----
+
+export function getTodayVisitedOutlets() {
+  try {
+    var raw = window.localStorage.getItem(todayOutletKey())
+    if (!raw) return []
+    var parsed = JSON.parse(raw)
+    return Array.isArray(parsed) ? parsed : []
+  } catch (err) {
+    return []
+  }
+}
+
+export function recordVisitedOutlet(customerName) {
+  if (!customerName) return getTodayVisitedOutlets()
+  var list = getTodayVisitedOutlets()
+  if (list.indexOf(customerName) === -1) {
+    list.push(customerName)
+    try {
+      window.localStorage.setItem(todayOutletKey(), JSON.stringify(list))
+    } catch (err) {
+      // localStorage unavailable
+    }
+  }
+  return list
 }
 
 export function getTodayLabel() {
